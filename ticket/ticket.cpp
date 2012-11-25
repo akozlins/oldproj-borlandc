@@ -1,36 +1,36 @@
-#include <fstream.h>
-ofstream fs1("f1.txt");
 
+#include <stdio.h>
 
-class chislo
+class Ticket
 {
-  public:
-  short znachenie1[6];
-  float znachenie2[6];
-  char operaciya[6];
-  short skobka[6][2];
+private:
+  static const unsigned int OP_ADD = 1;
+  static const unsigned int OP_SUB = 2;
+  static const unsigned int OP_MUL = 3;
+  static const unsigned int OP_DIV = 4;
 
-  chislo(short zn1, short zn2, short zn3, short zn4, short zn5, short zn6)
+  unsigned char digit[6];
+  unsigned char op[6];
+  unsigned char seq[6];
+public:
+  int init(const char* number)
   {
-    znachenie1[0] = zn1;
-    znachenie1[1] = zn2;
-    znachenie1[2] = zn3;
-    znachenie1[3] = zn4;
-    znachenie1[4] = zn5;
-    znachenie1[5] = zn6;
-    znachenie2[0] = zn1;
-    znachenie2[1] = zn2;
-    znachenie2[2] = zn3;
-    znachenie2[3] = zn4;
-    znachenie2[4] = zn5;
-    znachenie2[5] = zn6;
-    for(int i = 0;i < 6;i++)
-    {
-      skobka[i][0] = 0;
-      skobka[i][1] = 0;
-    }
-  };
+    int i = 0;
 
+    while(i < 6 && number[i] != '\0')
+    {
+      if(!('0' <= number[i] && number[i] <= '9')) return 1;
+      digit[i] = (unsigned char)(number[i] - '0');
+      op[i] = seq[i] = 0;
+      i++;
+    }
+
+    if(i != 6) return 1;
+
+    return 0;
+  }
+
+public:
   void print()
   {
     for(int i = 0;i < 6;i++)
@@ -48,44 +48,6 @@ class chislo
     }
   }
 };
-
-
-class list
-{
-  public:
-  list *pred;
-  list *sled;
-  chislo *elem;
-  static list *last;
-  static list *begin;
-
-  void add(chislo *a)
-  {
-    if(last == NULL)
-    {
-      begin = this;
-      sled = NULL;
-      pred = NULL;
-      last = this;
-      elem = a;
-    }
-    else
-    {
-      last->sled = this;
-      pred = last;
-      elem = a;
-      sled = NULL;
-      last = this;
-    }
-  }
-  void sub()
-  {
-    
-  }
-};
-list *list::last = NULL;
-list *list::begin = NULL;
-
 
 class mas
 {
@@ -195,9 +157,21 @@ void init_bb(int k, mas numb, chislo ch)
   }
 }
 
-
-int main()
+int main(int argn, char** argc)
 {
+  if(argn != 2)
+  {
+    printf("usage: %s <number>\n", argc[0]);
+    return 1;
+  }
+
+  Ticket ticket;
+  if(!ticket.init(argc[1]))
+  {
+    printf("error: wront number format\n");
+    return 1;
+  }
+
   int b[6];
   for(int i = 0;i < 6;i++)
   {
@@ -215,5 +189,6 @@ int main()
   ch.znachenie1[0] = -ch.znachenie1[0];
   ch.znachenie2[0] = -ch.znachenie2[0];
   init_bb(6, m, ch);
+
   return 0;
 }
